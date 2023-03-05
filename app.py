@@ -61,7 +61,7 @@ block = gr.Blocks(css="#chatbot_custom > .wrap > .message-wrap > .bot {font-size
 
 with block:
     gr.Markdown("""<h1><center>VnGPT - AI cho mọi nhà</center></h1>""", elem_id="custom_title_h1")
-    gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="#">Xem thêm tại đây</a></center></p>""")
+    gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p>""")
     with gr.Tab("ChatGPT"):
         gr.Markdown("""<h1><center>Hội thoại GPT</center></h1>""")
         with gr.Row(elem_id="custom_row"):
