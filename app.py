@@ -82,4 +82,4 @@ with block:
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
 
-block.launch(server_name = "0.0.0.0",auth = ('aivgroup','YHPTNGMevsk239nW'),debug = True)
+block.launch(server_name = "0.0.0.0",debug = True)
