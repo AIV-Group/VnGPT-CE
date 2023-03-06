@@ -1,5 +1,4 @@
 import os
-import openai
 import gradio as gr
 from dotenv import load_dotenv
 load_dotenv('./.env')
