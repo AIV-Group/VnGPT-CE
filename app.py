@@ -21,6 +21,9 @@ with block:
               chatbot = gr.Chatbot(elem_id="chatbot_custom")
               message = gr.Textbox(placeholder=prompt, label="Câu hỏi của bạn")
               state = gr.State()
+              submit = gr.Button("Gửi câu hỏi")
+              submit.click(chatgpt_process, [message, max_tokens, temperature, role, chatbot], chatbot, scroll_to_output=True)
+              submit.click(lambda :"", None, message, scroll_to_output=True)
               message.submit(chatgpt_process, [message, max_tokens, temperature, role, chatbot], chatbot, scroll_to_output=True)
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
