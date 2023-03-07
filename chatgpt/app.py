@@ -42,8 +42,11 @@ def chatgpt_process(input, max_tokens, temperature, role, history):
         global conversation
         prompt = input
         conversation.append({'role': f'{role}', 'content': prompt})
-        conversation = ChatGPT_conversation(conversation, max_tokens, temperature)
-        response = conversation[-1]['content'].strip()
+        try:
+            conversation = ChatGPT_conversation(conversation, max_tokens, temperature)
+            response = conversation[-1]['content'].strip()
+        except:
+            response = "Đã có lỗi. Vui lòng kiểm tra lại số dư tài khoản OpenAI của bạn hoặc kết nối."
         print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), response))
     ## history for chatbot gradio
     history = history or []
