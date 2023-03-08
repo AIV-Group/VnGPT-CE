@@ -38,8 +38,9 @@ with block:
           with gr.Column(scale=3, min_width=600):
             link = gr.Textbox(label="YouTube Link")
           with gr.Column(scale=3, min_width=600):
-            msecond_start = gr.inputs.Slider(minimum=0, maximum=10000, step=1, label="Thời điểm bắt đầu (phút)"),
-            msecond_end = gr.inputs.Slider(minimum=0, maximum=10000, step=1, label="Thời điểm kết thúc (phút)"),
+            option = gr.Label(value="Tùy chỉnh cắt đoạn chỉ hiển thị khi bạn nhập link", visible=True, interactive=False)
+            msecond_start = gr.Slider(label="Thời gian bắt đầu (giây)", minimum=0, maximum=1048, step=1, value=0, elem_id="msecond_start", visible=False)
+            msecond_end = gr.Slider(label="Thời gian kết thúc (giây)", minimum=0, maximum=1048, step=1, value=0, elem_id="msecond_end", visible=False)
         with gr.Row().style(equal_height=True):
           with gr.Column(scale=3, min_width=600):
             title = gr.Label(label="Tiêu đề video")
@@ -49,11 +50,14 @@ with block:
           text = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
         with gr.Row().style(equal_height=True):
           btn = gr.Button("Bóc băng")       
-          btn.click(speech_to_text, inputs=[link], outputs=[text])
+          btn.click(speech_to_text, inputs=[link, msecond_start, msecond_end], outputs=[text])
           btn.click(lambda :"", None, message, scroll_to_output=True)
           link.change(populate_metadata, inputs=[link], outputs=[img, title])
+          link.change(fn=lambda value: gr.update(visible=True), inputs=[link], outputs=[msecond_start])
+          link.change(fn=lambda value: gr.update(visible=True), inputs=[link], outputs=[msecond_end])
+          link.change(fn=lambda value: gr.update(visible=False), inputs=[link], outputs=[option])
 
-
+  
 
 
         # with gr.Row():
@@ -66,5 +70,12 @@ with block:
     #stable diffusion
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
-
-block.launch(server_name = "0.0.0.0",debug = True)
+ID = os.environ['ID']
+PASSWORD = os.environ['PASSWORD']
+AUTH = os.environ['AUTH']
+if AUTH == "False":
+  block.queue(concurrency_count=1)
+  block.launch(server_name = "0.0.0.0",debug = True)
+else:
+  block.queue(concurrency_count=1)
+  block.launch(server_name = "0.0.0.0", auth = (ID,PASSWORD),debug = True)
