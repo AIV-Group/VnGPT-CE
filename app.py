@@ -3,6 +3,7 @@ import gradio as gr
 from dotenv import load_dotenv
 load_dotenv('./.env')
 from chatgpt.app import *
+from speech_to_text.app import *
 
 block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #444654 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
 
@@ -30,6 +31,39 @@ with block:
               clear = gr.Button("Xóa lịch sử chat")
               clear.click(lambda: None, None, chatbot, queue=False)
               clear.click(lambda: clear_history(), queue=False)
+    # speech_to_text
+    with gr.Tab("Speech to text"):
+        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1>""")
+        with gr.Row().style(equal_height=True):
+          with gr.Column(scale=3, min_width=600):
+            link = gr.Textbox(label="YouTube Link")
+          with gr.Column(scale=3, min_width=600):
+            msecond_start = gr.inputs.Slider(minimum=0, maximum=10000, step=1, label="Thời điểm bắt đầu (phút)"),
+            msecond_end = gr.inputs.Slider(minimum=0, maximum=10000, step=1, label="Thời điểm kết thúc (phút)"),
+        with gr.Row().style(equal_height=True):
+          with gr.Column(scale=3, min_width=600):
+            title = gr.Label(label="Tiêu đề video")
+          with gr.Column(scale=3, min_width=600):
+            img = gr.Image(label="Thumbnail youtube")
+        with gr.Row().style(equal_height=True):
+          text = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
+        with gr.Row().style(equal_height=True):
+          btn = gr.Button("Bóc băng")       
+          btn.click(speech_to_text, inputs=[link], outputs=[text])
+          btn.click(lambda :"", None, message, scroll_to_output=True)
+          link.change(populate_metadata, inputs=[link], outputs=[img, title])
+
+
+
+
+        # with gr.Row():
+        #     with gr.Column(scale=5, min_width=600):
+        #         text = gr.Textbox(label="Kết quả bóc băng")
+        #     with gr.Column(scale=3, min_width=600):
+        #         message = gr.Textbox(placeholder=prompt, label="Link youtube")
+        #         message.submit(speech_to_text, inputs=[message], outputs=[text])
+        #         message.submit(lambda :"", None, message, scroll_to_output=True)
+    #stable diffusion
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
 
