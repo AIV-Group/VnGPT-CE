@@ -13,27 +13,36 @@ import gradio as gr
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 openai.api_key = OPEN_API_KEY
 # feature audio
-def speech_to_text(link_youtube, start_second, end_second):
+def speech_to_text(link_youtube, fulltime, start_second, end_second):
     # video = 'https://www.youtube.com/watch?v=LFwU8byhFsI'
     video = link_youtube
     data = YouTube(video)
     # Converting and downloading as 'MP4' file
     audio = data.streams.get_audio_only()
     path_audio = audio.download()
-    # process cut audio
-    song = AudioSegment.from_file(path_audio, format="mp4")
-    # PyDub handles time in milliseconds
-    start_second = start_second * 1000
-    end_second = end_second * 1000
-    cut_audio = song[start_second:end_second]
-    cut_audio.export(path_audio, format="mp4")
-    # process speech_to_text
-    file = open(f"{path_audio}", "rb")
-    transcription = openai.Audio.transcribe("whisper-1", file)
-    print(transcription.text)
-    #remove file audio after process
-    os.remove(path_audio)
-    return transcription.text
+    if fulltime == True:
+        # process cut audio
+        song = AudioSegment.from_file(path_audio, format="mp4")
+        # PyDub handles time in milliseconds
+        start_second = start_second * 60 * 1000
+        end_second = end_second * 60 * 1000
+        cut_audio = song[start_second:end_second]
+        cut_audio.export(path_audio, format="mp4")
+        # process speech_to_text
+        file = open(f"{path_audio}", "rb")
+        transcription = openai.Audio.transcribe("whisper-1", file)
+        print(transcription.text)
+        #remove file audio after process
+        os.remove(path_audio)
+        return transcription.text
+    else:
+        # process speech_to_text
+        file = open(f"{path_audio}", "rb")
+        transcription = openai.Audio.transcribe("whisper-1", file)
+        print(transcription.text)
+        #remove file audio after process
+        os.remove(path_audio)
+        return transcription.text
 
 def populate_metadata(link_youtube):
     yt = YouTube(link_youtube)

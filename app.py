@@ -12,7 +12,7 @@ with block:
     gr.Markdown("""<h1><center>VnGPT - AI cho mọi nhà</center></h1>""", elem_id="custom_title_h1")
     gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p>""")
     with gr.Tab("ChatGPT"):
-        gr.Markdown("""<h1><center>Hội thoại GPT</center></h1>""")
+        gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1>""")
         with gr.Row(elem_id="custom_row"):
             with gr.Column(scale=3, min_width=600):
               max_tokens = gr.Slider(label="Max Tokens (tối thiểu 150, tối đa 1048)", minimum=150, maximum=1048, step=1, value=256)
@@ -32,15 +32,15 @@ with block:
               clear.click(lambda: None, None, chatbot, queue=False)
               clear.click(lambda: clear_history(), queue=False)
     # speech_to_text
-    with gr.Tab("Speech to text"):
-        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1>""")
+    with gr.Tab("Bóc băng Youtube"):
+        gr.Markdown("""<h1><center>Bóc băng Youtube bằng Whisper (OpenAI)</center></h1>""")
         with gr.Row().style(equal_height=True):
           with gr.Column(scale=3, min_width=600):
             link = gr.Textbox(label="YouTube Link")
           with gr.Column(scale=3, min_width=600):
-            option = gr.Label(value="Tùy chỉnh cắt đoạn chỉ hiển thị khi bạn nhập link", visible=True, interactive=False)
-            msecond_start = gr.Slider(label="Thời gian bắt đầu (giây)", minimum=0, maximum=1048, step=1, value=0, elem_id="msecond_start", visible=False)
-            msecond_end = gr.Slider(label="Thời gian kết thúc (giây)", minimum=0, maximum=1048, step=1, value=0, elem_id="msecond_end", visible=False)
+            fulltime = gr.Checkbox(label="Chọn khoảng bóc băng", visible=True)
+            msecond_start = gr.Slider(label="Thời gian bắt đầu (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_start", visible=False)
+            msecond_end = gr.Slider(label="Thời gian kết thúc (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_end", visible=False)
         with gr.Row().style(equal_height=True):
           with gr.Column(scale=3, min_width=600):
             title = gr.Label(label="Tiêu đề video")
@@ -50,12 +50,12 @@ with block:
           text = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
         with gr.Row().style(equal_height=True):
           btn = gr.Button("Bóc băng")       
-          btn.click(speech_to_text, inputs=[link, msecond_start, msecond_end], outputs=[text])
+          btn.click(speech_to_text, inputs=[link, fulltime, msecond_start, msecond_end], outputs=[text])
           btn.click(lambda :"", None, message, scroll_to_output=True)
           link.change(populate_metadata, inputs=[link], outputs=[img, title])
-          link.change(fn=lambda value: gr.update(visible=True), inputs=[link], outputs=[msecond_start])
-          link.change(fn=lambda value: gr.update(visible=True), inputs=[link], outputs=[msecond_end])
-          link.change(fn=lambda value: gr.update(visible=False), inputs=[link], outputs=[option])
+          fulltime.change(fn=lambda value: gr.update(visible=value), inputs=[fulltime], outputs=[msecond_start])
+          fulltime.change(fn=lambda value: gr.update(visible=value), inputs=[fulltime], outputs=[msecond_end])
+          # fulltime.change(fn=lambda value: update_slider_time(value), inputs=[fulltime])
 
   
 
