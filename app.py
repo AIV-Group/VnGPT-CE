@@ -55,19 +55,6 @@ with block:
           link.change(populate_metadata, inputs=[link], outputs=[img, title])
           fulltime.change(fn=lambda value: gr.update(visible=value), inputs=[fulltime], outputs=[msecond_start])
           fulltime.change(fn=lambda value: gr.update(visible=value), inputs=[fulltime], outputs=[msecond_end])
-          # fulltime.change(fn=lambda value: update_slider_time(value), inputs=[fulltime])
-
-  
-
-
-        # with gr.Row():
-        #     with gr.Column(scale=5, min_width=600):
-        #         text = gr.Textbox(label="Kết quả bóc băng")
-        #     with gr.Column(scale=3, min_width=600):
-        #         message = gr.Textbox(placeholder=prompt, label="Link youtube")
-        #         message.submit(speech_to_text, inputs=[message], outputs=[text])
-        #         message.submit(lambda :"", None, message, scroll_to_output=True)
-    #stable diffusion
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
 ID = os.environ['ID']
