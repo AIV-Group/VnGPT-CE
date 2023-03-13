@@ -20,7 +20,7 @@ def speech_to_text(link_youtube, fulltime, start_second, end_second):
     # Converting and downloading as 'MP4' file
     audio = data.streams.get_audio_only()
     path_audio = audio.download()
-    if fulltime == True:
+    if fulltime == False:
         # process cut audio
         song = AudioSegment.from_file(path_audio, format="mp4")
         # PyDub handles time in milliseconds
@@ -49,6 +49,9 @@ def populate_metadata(link_youtube):
     return yt.thumbnail_url, yt.title
 
 def length_link(link_youtube):
-    yt = YouTube(link_youtube)
-    print(yt.length)
-    return yt.length
+    try:
+        yt = YouTube(link_youtube)
+        print(yt.length)
+        return round(yt.length/60)
+    except:
+        return 180
