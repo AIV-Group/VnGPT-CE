@@ -1,6 +1,8 @@
 # VnGPT - AI cho mọi nhà
 Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình
 
+👉Dùng thử VnGPT tại: https://vngpt.aivgroup.vn (lưu ý: bản demo nên có giới hạn về số token tối đa)
+
 ## Cài đặt và sử dụng
 Để sử dụng VnGPT bạn cần các thông tin sau:
 - [OpenAI API Key lấy ở đây](https://platform.openai.com/account/api-keys)
