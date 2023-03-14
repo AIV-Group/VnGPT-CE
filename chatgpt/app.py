@@ -56,25 +56,27 @@ def ChatGPT_conversation(conversation, type_account, api_key, max_tokens=1000, t
 conversation = []
 def chatgpt_process(input, max_tokens, temperature, role, type_account, api_token, history):
     # print(history)
-    
-    token_input = len(input) + max_tokens
-    if token_input > 1800: 
-        response = "Bạn đã vượt quá hạn mức, vui lòng rút gọn câu hỏi phù hợp hơn"
-    else:
-        if role:
-            role=role
+    if type_account:  
+        token_input = len(input) + max_tokens
+        if token_input > 1800: 
+            response = "Bạn đã vượt quá hạn mức, vui lòng rút gọn câu hỏi phù hợp hơn"
         else:
-            role="user"
-        global conversation
-        prompt = input
-        conversation.append({'role': f'{role}', 'content': prompt})
-        api_key = api_token
-        try:
-            conversation = ChatGPT_conversation(conversation, type_account, api_key, max_tokens, temperature)
-            response = conversation[-1]['content'].strip()
-        except:
-            response = "Đã có lỗi. Vui lòng kiểm tra lại số dư tài khoản OpenAI/VnGPT của bạn hoặc kết nối."
-        print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), response))
+            if role:
+                role=role
+            else:
+                role="user"
+            global conversation
+            prompt = input
+            conversation.append({'role': f'{role}', 'content': prompt})
+            api_key = api_token
+            try:
+                conversation = ChatGPT_conversation(conversation, type_account, api_key, max_tokens, temperature)
+                response = conversation[-1]['content'].strip()
+            except:
+                response = "Đã có lỗi. Vui lòng kiểm tra lại số dư tài khoản OpenAI/VnGPT của bạn hoặc kết nối."
+            print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), response))
+    else:
+        response = "Bạn chưa cài đặt thông tin tài khoản để sử dụng VnGPT"
     ## history for chatbot gradio
     history = history or []
     output = response.replace("\n", "<br/>")
