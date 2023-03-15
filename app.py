@@ -56,9 +56,9 @@ with block:
         gr.Markdown("""<h1><center>Bóc băng Youtube bằng Whisper (OpenAI)</center></h1>""")
         with gr.Row().style(equal_height=True):
           with gr.Column(scale=3, min_width=600):
-            link = gr.Textbox(label="YouTube Link")
+            link_youtube = gr.Textbox(label="YouTube Link")
           with gr.Column(scale=3, min_width=600):
-            fulltime = gr.Checkbox(label="Bóc toàn bộ video", visible=True, value=True)
+            cut_fulltime = gr.Checkbox(label="Bóc toàn bộ video", visible=True, value=True)
             msecond_start = gr.Slider(label="Thời gian bắt đầu (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_start", visible=False)
             msecond_end = gr.Slider(label="Thời gian kết thúc (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_end", visible=False)
         with gr.Row().style(equal_height=True):
@@ -67,23 +67,29 @@ with block:
           with gr.Column(scale=3, min_width=600):
             img = gr.Image(label="Thumbnail youtube")
         with gr.Row().style(equal_height=True):
-          text = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
+          whisper_result = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
+        alert_forward_chatgpt = gr.Markdown(value="""<i style="color:#0040FF"><center>Bạn có thể gửi kết quả bóc băng sang ChatGPT để tiếp tục xử lý</center></i>""", visible=True)  
         with gr.Row().style(equal_height=True):
-          btn = gr.Button("Bóc băng")       
-          btn.click(speech_to_text, inputs=[link, fulltime, msecond_start, msecond_end], outputs=[text])
+          btn = gr.Button("Bóc băng")     
+          btn.click(speech_to_text, inputs=[link_youtube, cut_fulltime, msecond_start, msecond_end], outputs=[whisper_result])
           btn.click(lambda :"", None, message, scroll_to_output=True)
-          link.change(populate_metadata, inputs=[link], outputs=[img, title])
-          def filter_full_time(fulltime, link):
+          btn_send_gpt = gr.Button("Đưa kết quả sang ChatGPT") 
+          btn_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=whisper_result, outputs=message)
+          btn_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>"""), inputs=btn_send_gpt, outputs=alert_forward_chatgpt)
+          link_youtube.change(populate_metadata, inputs=[link_youtube], outputs=[img, title])
+          def filter_full_time(fulltime, link_youtube):
             if fulltime == True:
                 return gr.update(visible=False), gr.update(visible=False)
             elif fulltime == False:
-                print("This link: ",link)
-                length = length_link(link)
+                print("This link: ",link_youtube)
+                length = length_link(link_youtube)
                 return gr.update(visible=True, maximum=length), gr.update(visible=True, maximum=length)
-          fulltime.change(filter_full_time, inputs=[fulltime,link], outputs=[msecond_start, msecond_end])
-          link.change(filter_full_time, inputs=[fulltime,link], outputs=[msecond_start, msecond_end])
+          cut_fulltime.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
+          link_youtube.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
+
+# info auth app
 ID = os.environ['ID']
 PASSWORD = os.environ['PASSWORD']
 AUTH = os.environ['AUTH']
