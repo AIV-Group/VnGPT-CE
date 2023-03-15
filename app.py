@@ -28,6 +28,33 @@ def check_result_speech_to_text(whisper_result):
    else:
       return gr.update(interactive=False)
 
+# func check exits link youtube
+def check_link_youtube(link_youtube):
+   try:
+      populate_metadata(link_youtube)
+      return gr.update(interactive=True), gr.update(value="""<i style="color:#3ADF00"><center>Link youtube hợp lệ. Mời tiếp tục</center></i>""", visible=True)
+   except:
+      return gr.update(interactive=False), gr.update(value="""<i style="color:red"><center>Link youtube không hợp lệ. Xin thử lại</center></i>""", visible=True)
+
+# func check type speech_to_text
+def check_type_transcripts(type_transcripts):
+   if type_transcripts == "Sử dụng subtitles của Youtube":
+      return gr.update(visible=False), gr.update(visible=True)
+   else:
+      return gr.update(visible=True), gr.update(visible=False)
+
+# process before speech_to_text
+def process_speech_to_text(type_transcripts, language_transcripts,link_youtube, cut_fulltime, msecond_start, msecond_end):
+   if type_transcripts == "Sử dụng subtitles của Youtube":
+      if language_transcripts == "Tiếng Việt":
+        transcripts = youtube_transcripts(link_youtube, "vi")
+      else:
+        transcripts = youtube_transcripts(link_youtube, "en")
+      return transcripts
+   else:
+      transcripts = speech_to_text(link_youtube, cut_fulltime, msecond_start, msecond_end)
+      return transcripts
+
 block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #444654 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
 
 
@@ -72,24 +99,27 @@ with block:
     with gr.Tab("Bóc băng Youtube"):
         gr.Markdown("""<h1><center>Bóc băng Youtube bằng Whisper (OpenAI)</center></h1>""")
         with gr.Row().style(equal_height=True):
-          with gr.Column(scale=3, min_width=600):
+          # with gr.Column():
             link_youtube = gr.Textbox(label="YouTube Link")
-          with gr.Column(scale=3, min_width=600):
-            cut_fulltime = gr.Checkbox(label="Bóc toàn bộ video", visible=True, value=True)
+        alert_check_link_youtube = gr.Markdown(visible=False)     
+        with gr.Row().style(equal_height=True):
+          with gr.Box():
+            type_transcripts = gr.Dropdown(["Sử dụng subtitles của Youtube", "Sử dụng Whisper AI"], label="Loại bóc băng", info="Lựa chọn hình thức bóc băng", value="Sử dụng subtitles của Youtube", interactive=True)
+            language_transcripts = gr.Dropdown(["Tiếng Việt", "Tiếng Anh"], label="Ngôn ngữ bóc băng", value="Tiếng Việt", interactive=True, visible=True)
+            cut_fulltime = gr.Checkbox(label="Bóc toàn bộ video", visible=False, value=True)
             msecond_start = gr.Slider(label="Thời gian bắt đầu (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_start", visible=False)
             msecond_end = gr.Slider(label="Thời gian kết thúc (phút)", minimum=0, maximum=180, step=1, value=0, elem_id="msecond_end", visible=False)
-        with gr.Row().style(equal_height=True):
-          with gr.Column(scale=3, min_width=600):
-            title = gr.Label(label="Tiêu đề video")
-          with gr.Column(scale=3, min_width=600):
-            img = gr.Image(label="Thumbnail youtube")
+            type_transcripts.change(check_type_transcripts, type_transcripts, outputs=[cut_fulltime,language_transcripts])
+          with gr.Box():
+              title = gr.Label(label="Tiêu đề video")
+              img = gr.Image(label="Thumbnail youtube")
         with gr.Row().style(equal_height=True):
           whisper_result = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
         alert_forward_chatgpt = gr.Markdown(value="""<i style="color:#0040FF"><center>Bạn có thể gửi kết quả bóc băng sang ChatGPT để tiếp tục xử lý</center></i>""", visible=True)  
         with gr.Row().style(equal_height=True):
-          btn = gr.Button("Bóc băng")     
-          btn.click(speech_to_text, inputs=[link_youtube, cut_fulltime, msecond_start, msecond_end], outputs=[whisper_result])
-          btn.click(lambda :"", None, message, scroll_to_output=True)
+          btn_transcripts = gr.Button("Bóc băng", interactive=False)     
+          btn_transcripts.click(process_speech_to_text, inputs=[type_transcripts, language_transcripts,link_youtube, cut_fulltime, msecond_start, msecond_end], outputs=[whisper_result])
+          btn_transcripts.click(lambda :"", None, message, scroll_to_output=True)
           btn_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
           btn_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=whisper_result, outputs=message)
           btn_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>"""), inputs=btn_send_gpt, outputs=alert_forward_chatgpt)
@@ -97,6 +127,7 @@ with block:
           link_youtube.change(populate_metadata, inputs=[link_youtube], outputs=[img, title])
           cut_fulltime.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
           link_youtube.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
+          link_youtube.change(check_link_youtube, link_youtube, outputs=[btn_transcripts, alert_check_link_youtube])
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
 
