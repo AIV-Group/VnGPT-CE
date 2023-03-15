@@ -6,6 +6,28 @@ from chatgpt.app import *
 from speech_to_text.app import *
 from account.app import *
 
+#all function process app
+# func check type account
+def filter_type_account(type_account):
+  if type_account == "OpenAI Token":
+    return gr.update(visible=True), gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), gr.update(visible=False)
+  elif type_account == "Tài khoản VnGPT":
+    return gr.update(visible=False), gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), gr.update(visible=True)
+#func check options cut video
+def filter_full_time(fulltime, link_youtube):
+  if fulltime == True:
+    return gr.update(visible=False), gr.update(visible=False)
+  elif fulltime == False:
+    print("This link: ",link_youtube)
+    length = length_link(link_youtube)
+    return gr.update(visible=True, maximum=length), gr.update(visible=True, maximum=length)
+# func check ready result speech to text
+def check_result_speech_to_text(whisper_result):
+   if whisper_result:
+      return gr.update(interactive=True)
+   else:
+      return gr.update(interactive=False)
+
 block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #444654 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
 
 
@@ -17,11 +39,6 @@ with block:
         gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
         # main_key = gr.Textbox(visible=False)
         type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"])
-        def filter_type_account(type_account):
-          if type_account == "OpenAI Token":
-              return gr.update(visible=True), gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), gr.update(visible=False)
-          elif type_account == "Tài khoản VnGPT":
-              return gr.update(visible=False), gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), gr.update(visible=True)
         api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây",show_label=False, lines=1, type='password', interactive=True, visible=False)
         username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
         password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
@@ -73,17 +90,11 @@ with block:
           btn = gr.Button("Bóc băng")     
           btn.click(speech_to_text, inputs=[link_youtube, cut_fulltime, msecond_start, msecond_end], outputs=[whisper_result])
           btn.click(lambda :"", None, message, scroll_to_output=True)
-          btn_send_gpt = gr.Button("Đưa kết quả sang ChatGPT") 
+          btn_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
           btn_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=whisper_result, outputs=message)
           btn_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>"""), inputs=btn_send_gpt, outputs=alert_forward_chatgpt)
+          whisper_result.change(check_result_speech_to_text, whisper_result, btn_send_gpt)
           link_youtube.change(populate_metadata, inputs=[link_youtube], outputs=[img, title])
-          def filter_full_time(fulltime, link_youtube):
-            if fulltime == True:
-                return gr.update(visible=False), gr.update(visible=False)
-            elif fulltime == False:
-                print("This link: ",link_youtube)
-                length = length_link(link_youtube)
-                return gr.update(visible=True, maximum=length), gr.update(visible=True, maximum=length)
           cut_fulltime.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
           link_youtube.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
     with gr.Tab("Stable Diffusion"):
