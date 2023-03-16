@@ -26,7 +26,7 @@ def ChatGPT_conversation(conversation, type_account, api_key, max_tokens=1000, t
             presence_penalty=0,
             temperature=temperature,
             top_p=1,
-            max_tokens=max_tokens,
+            # max_tokens=max_tokens,
         )
         print(type(response))
         conversation.append({'role': response.choices[0].message.role, 'content': response.choices[0].message.content})
