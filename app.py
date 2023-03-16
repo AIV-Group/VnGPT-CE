@@ -79,7 +79,7 @@ with block:
         gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1>""")
         with gr.Row(elem_id="custom_row"):
             with gr.Column(scale=3, min_width=600):
-              max_tokens = gr.Slider(label="Max Tokens (tối thiểu 150, tối đa 1048)", minimum=150, maximum=1048, step=1, value=256)
+              max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256)
               role=gr.Radio(["user", "system", "assistant"], label="Lựa chọn vai trò sẽ hỏi")
               temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.7)
             with gr.Column(scale=5, min_width=600):
@@ -97,7 +97,7 @@ with block:
               clear.click(lambda: clear_history(), queue=False)
     # speech_to_text
     with gr.Tab("Bóc băng Youtube"):
-        gr.Markdown("""<h1><center>Bóc băng Youtube bằng Whisper (OpenAI)</center></h1>""")
+        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1>""")
         with gr.Row().style(equal_height=True):
           # with gr.Column():
             link_youtube = gr.Textbox(label="YouTube Link")
