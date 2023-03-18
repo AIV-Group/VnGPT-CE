@@ -4,7 +4,11 @@ from dotenv import load_dotenv
 load_dotenv('./.env')
 import requests
 import json
-
+# new code get response openai
+from typing import List, Tuple, Dict, Generator
+from langchain.llms import OpenAI
+import gradio as gr
+import requests
 
 #if you have OpenAI API key as an environment variable, enable the below
 #openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -12,72 +16,74 @@ import json
 #if you have OpenAI API key as a string, enable the below
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 
-prompt = "Hỏi chatbot gpt bất cứ vấn đề nào mà bạn muốn"
 
-model_id = 'gpt-3.5-turbo'
+model_name = "gpt-3.5-turbo"
 
-def ChatGPT_conversation(conversation, type_account, api_key, max_tokens=1000, temperature=0.7):
-    if type_account == "OpenAI Token":
-        openai.api_key = api_key
-        print(conversation)
-        response = openai.ChatCompletion.create(
-            model=model_id,
-            messages=conversation,
-            presence_penalty=0,
-            temperature=temperature,
-            top_p=1,
-            # max_tokens=max_tokens,
-        )
-        print(type(response))
-        conversation.append({'role': response.choices[0].message.role, 'content': response.choices[0].message.content})
-        return conversation
-    elif type_account == "Tài khoản VnGPT":
-        url = "https://api-vngpt.aivgroup.vn/api/chat/"
+def create_history_messages(history: List[Tuple[str, str]]) -> List[dict]:
+    history_messages = [{"role": "user", "content": m[0]} for m in history]
+    history_messages.extend([{"role": "assistant", "content": m[1]} for m in history])
+    return history_messages
 
-        payload = json.dumps({
-            "model": model_id,
-            "messages": conversation,
-            "temperature": temperature,
-            "max_tokens": max_tokens
-                })
-        headers = {
-        'Authorization': f'Token {api_key}',
-        'Content-Type': 'application/json',
-        }
+def create_formatted_history(history_messages: List[dict]) -> List[Tuple[str, str]]:
+    formatted_history = []
+    user_messages = []
+    assistant_messages = []
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-        response = response.json()
-        conversation.append({'role': response["choices"][0]["message"]["role"], 'content': response["choices"][0]["message"]["content"]})
-        return conversation
+    for message in history_messages:
+        if message["role"] == "user":
+            user_messages.append(message["content"])
+        elif message["role"] == "assistant":
+            assistant_messages.append(message["content"])
+
+        if user_messages and assistant_messages:
+            formatted_history.append(
+                ("".join(user_messages), "".join(assistant_messages))
+            )
+            user_messages = []
+            assistant_messages = []
+
+    # append any remaining messages
+    if user_messages:
+        formatted_history.append(("".join(user_messages), None))
+    elif assistant_messages:
+        formatted_history.append((None, "".join(assistant_messages)))
+
+    return formatted_history
+
+def chat(
+    message: str, state: List[Dict[str, str]], temperature: float, api_key: str
+) -> Generator[Tuple[List[Tuple[str, str]], List[Dict[str, str]]], None, None]:
+    LLM = OpenAI(model_name=model_name, temperature=temperature, openai_api_key=api_key)
+    history_messages = state
+    if history_messages == None:
+        history_messages = []
+        history_messages.append({"role": "system", "content": "A helpful assistant."})
+
+    history_messages.append({"role": "user", "content": message})
+    # We have no content for the assistant's response yet but we will update this:
+    history_messages.append({"role": "assistant", "content": ""})
+
+    response_message = ""
+
+    chat_generator = LLM.client.create(
+        messages=history_messages, stream=True, model=model_name
+    )
+    print("State 1: ",state)
+    for chunk in chat_generator:
+        if "choices" in chunk:
+            for choice in chunk["choices"]:
+                if "delta" in choice and "content" in choice["delta"]:
+                    new_token = choice["delta"]["content"]
+                    # Add the latest token:
+                    response_message += new_token
+                    # Update the assistant's response in our model:
+                    history_messages[-1]["content"] = response_message
+
+                if "finish_reason" in choice and choice["finish_reason"] == "stop":
+                    break
+        formatted_history = create_formatted_history(history_messages)
+        yield formatted_history, history_messages
 
 
-
-
-conversation = []
-def chatgpt_process(input, max_tokens, temperature, role, type_account, api_token, history):
-    # print(history)
-    if type_account:  
-        if role:
-            role=role
-        else:
-            role="user"
-        global conversation
-        prompt = input
-        conversation.append({'role': f'{role}', 'content': prompt})
-        api_key = api_token
-        try:
-            conversation = ChatGPT_conversation(conversation, type_account, api_key, max_tokens, temperature)
-            response = conversation[-1]['content'].strip()
-        except:
-            response = "Đã có lỗi. Vui lòng kiểm tra lại câu hỏi hoặc tài khoản hệ thống."
-        print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), response))
-    else:
-        response = "Bạn chưa cài đặt thông tin tài khoản để sử dụng VnGPT"
-    ## history for chatbot gradio
-    history = history or []
-    output = response.replace("\n", "<br/>")
-    return history + [[input, output]]
-
-def clear_history():
-    global conversation
-    conversation = []
+def clear_history(state):
+    return None

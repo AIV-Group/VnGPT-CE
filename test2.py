@@ -72,15 +72,29 @@ def chat(
         print("THIS DATA HISTORY: ", formatted_history, "AND", history_messages)
         yield formatted_history, history_messages
 
-chatbot = gr.Chatbot(label="Chat").style(color_map=("yellow", "purple"))
-iface = gr.Interface(
-    fn=chat,
-    inputs=[
-        gr.Textbox(placeholder="Hello there 👋🏼 ", label="Message"),
-        "state",
-    ],
-    outputs=[chatbot, "state"],
-    allow_flagging="never",
-)
+# chatbot = gr.Chatbot(label="Chat").style(color_map=("yellow", "purple"))
+# iface = gr.Interface(
+#     fn=chat,
+#     inputs=[
+#         gr.Textbox(placeholder="Hello there 👋🏼 ", label="Message"),
+#         "state",
+#     ],
+#     outputs=[chatbot, "state"],
+#     allow_flagging="never",
+# )
 
-iface.queue().launch()
+# iface.queue().launch()
+
+block = gr.Blocks()
+
+
+with block:
+    gr.Markdown("""<h1><center>Build Yo'own ChatGPT with OpenAI API & Gradio</center></h1>
+    """)
+    chatbot = gr.Chatbot()
+    message = gr.Textbox(placeholder="Ahihi")
+    state = gr.State()
+    submit = gr.Button("SEND")
+    submit.click(chat, inputs=[message, state], outputs=[chatbot, state])
+
+block.queue().launch(debug = True)

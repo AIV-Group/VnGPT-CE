@@ -65,8 +65,8 @@ with block:
     with gr.Tab("Tài khoản"):
         gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
         # main_key = gr.Textbox(visible=False)
-        type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"])
-        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây",show_label=False, lines=1, type='password', interactive=True, visible=False)
+        type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"], value="OpenAI Token")
+        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value="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")
         username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
         password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
         alert_login = gr.Markdown(value="""<i style="color:#0040FF"><center>Tài khoản này do AIV Group cấp</center></i>""", visible=False)
@@ -79,22 +79,23 @@ with block:
         gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1>""")
         with gr.Row(elem_id="custom_row"):
             with gr.Column(scale=3, min_width=600):
-              max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256, visible=False)
-              role=gr.Radio(["user", "system", "assistant"], label="Lựa chọn vai trò sẽ hỏi", visible=False)
-              temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.7)
+              # max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256, visible=False)
+              # role=gr.Radio(["user", "system", "assistant"], label="Lựa chọn vai trò sẽ hỏi", visible=False)
+              temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.1, interactive=True)
             with gr.Column(scale=5, min_width=600):
               chatbot = gr.Chatbot(elem_id="chatbot_custom")
               message = gr.Textbox(placeholder=prompt, label="Câu hỏi của bạn")
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
-              submit.click(chatgpt_process, [message, max_tokens, temperature, role, type_account, api_key_textbox, chatbot], chatbot, scroll_to_output=True)
+              #submit gpt
+              submit.click(chat, inputs=[message, state, temperature, api_key_textbox], outputs=[chatbot, state])
               submit.click(lambda :"", None, message, scroll_to_output=True)
-              message.submit(chatgpt_process, [message, max_tokens, temperature, role, type_account, api_key_textbox, chatbot], chatbot, scroll_to_output=True)
+              message.submit(chat, inputs=[message, state, temperature, api_key_textbox], outputs=[chatbot, state])
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
               clear = gr.Button("Xóa lịch sử chat")
               clear.click(lambda: None, None, chatbot, queue=False)
-              clear.click(lambda: clear_history(), queue=False)
+              clear.click(fn=clear_history, inputs=state, outputs=state)
     # speech_to_text
     with gr.Tab("Bóc băng Youtube"):
         gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1>""")
