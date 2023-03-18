@@ -6,6 +6,7 @@ from chatgpt.app import *
 from speech_to_text.app import *
 from account.app import *
 
+OPEN_API_KEY = os.environ['OPEN_API_KEY']
 #all function process app
 # func check type account
 def filter_type_account(type_account):
@@ -66,7 +67,7 @@ with block:
         gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
         # main_key = gr.Textbox(visible=False)
         type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"], value="OpenAI Token")
-        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value="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")
+        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value=OPEN_API_KEY)
         username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
         password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
         alert_login = gr.Markdown(value="""<i style="color:#0040FF"><center>Tài khoản này do AIV Group cấp</center></i>""", visible=False)
