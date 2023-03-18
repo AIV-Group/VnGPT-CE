@@ -85,7 +85,7 @@ with block:
               temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.1, interactive=True)
             with gr.Column(scale=5, min_width=600):
               chatbot = gr.Chatbot(elem_id="chatbot_custom")
-              message = gr.Textbox(placeholder=prompt, label="Câu hỏi của bạn")
+              message = gr.Textbox(placeholder="Hỏi chatgpt bất cứ vấn đề nào mà bạn muốn", label="Câu hỏi của bạn")
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
               #submit gpt
