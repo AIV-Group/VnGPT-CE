@@ -55,6 +55,8 @@ def process_speech_to_text(type_transcripts, language_transcripts,link_youtube, 
    else:
       transcripts = speech_to_text(link_youtube, cut_fulltime, msecond_start, msecond_end)
       return transcripts
+def update_main_key(api_key_textbox):
+   return gr.update(value=api_key_textbox)
 
 block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
 
@@ -62,19 +64,7 @@ block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap
 with block:
     gr.Markdown("""<h1><center>VnGPT - AI cho mọi nhà</center></h1>""", elem_id="custom_title_h1")
     gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p>""")
-    # Veri account
-    with gr.Tab("Tài khoản"):
-        gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
-        # main_key = gr.Textbox(visible=False)
-        type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"], value="OpenAI Token")
-        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value=OPEN_API_KEY)
-        username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
-        password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
-        alert_login = gr.Markdown(value="""<i style="color:#0040FF"><center>Tài khoản này do AIV Group cấp</center></i>""", visible=False)
-        login_btn = gr.Button("Đăng nhập", visible=False)
-        login_btn.click(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
-        password.submit(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
-        type_account.change(filter_type_account, type_account, outputs=[api_key_textbox, username, password, login_btn, alert_login])
+    main_key = gr.Textbox(visible=False, value=OPEN_API_KEY)
     # ChatGPT--turbo3.5
     with gr.Tab("ChatGPT"):
         gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1>""")
@@ -89,9 +79,9 @@ with block:
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
               #submit gpt
-              submit.click(chat, inputs=[message, state, temperature, api_key_textbox], outputs=[chatbot, state])
+              submit.click(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state])
               submit.click(lambda :"", None, message, scroll_to_output=True)
-              message.submit(chat, inputs=[message, state, temperature, api_key_textbox], outputs=[chatbot, state])
+              message.submit(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state])
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
               clear = gr.Button("Xóa lịch sử chat")
@@ -132,6 +122,19 @@ with block:
           link_youtube.change(check_link_youtube, link_youtube, outputs=[btn_transcripts, alert_check_link_youtube])
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
+    # Veri account
+    with gr.Tab("Tài khoản"):
+        gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
+        type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"], value="OpenAI Token")
+        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value=OPEN_API_KEY)
+        username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
+        password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
+        alert_login = gr.Markdown(value="""<i style="color:#0040FF"><center>Tài khoản này do AIV Group cấp</center></i>""", visible=False)
+        login_btn = gr.Button("Đăng nhập", visible=False)
+        login_btn.click(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
+        password.submit(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
+        type_account.change(filter_type_account, type_account, outputs=[api_key_textbox, username, password, login_btn, alert_login])
+        api_key_textbox.change(update_main_key, api_key_textbox, main_key)
 
 # info auth app
 ID = os.environ['ID']
