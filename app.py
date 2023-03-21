@@ -75,13 +75,14 @@ with block:
               temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.1, interactive=True)
             with gr.Column(scale=5, min_width=600):
               chatbot = gr.Chatbot(elem_id="chatbot_custom")
+              alert_gen_chatgpt = gr.Markdown(value="""<i style="color:#3ADF00"><center>Câu hỏi càng ngắn gọn số token càng nhỏ</center></i>""", visible=True) 
               message = gr.Textbox(placeholder="Hỏi chatgpt bất cứ vấn đề nào mà bạn muốn", label="Câu hỏi của bạn")
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
               #submit gpt
-              submit.click(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state])
+              submit.click(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state, alert_gen_chatgpt])
               submit.click(lambda :"", None, message, scroll_to_output=True)
-              message.submit(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state])
+              message.submit(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state, alert_gen_chatgpt])
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
               clear = gr.Button("Xóa lịch sử chat")
@@ -146,3 +147,4 @@ if AUTH == "False":
 else:
   block.queue(concurrency_count=1)
   block.launch(server_name = "0.0.0.0", auth = (ID,PASSWORD),debug = True)
+ 
