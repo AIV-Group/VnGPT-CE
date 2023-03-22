@@ -5,6 +5,7 @@ load_dotenv('./.env')
 from chatgpt.app import *
 from speech_to_text.app import *
 from account.app import *
+from lib.utils import *
 
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 #all function process app
@@ -63,11 +64,11 @@ block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap
 
 with block:
     gr.Markdown("""<h1><center>VnGPT - AI cho mọi nhà</center></h1>""", elem_id="custom_title_h1")
-    gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p>""")
+    gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p><p><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Yêu cầu thêm tính năng tại đây</a></center></p>""")
     main_key = gr.Textbox(visible=False, value=OPEN_API_KEY)
     # ChatGPT--turbo3.5
     with gr.Tab("ChatGPT"):
-        gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1>""")
+        gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-ChatGPT-trong-VnGPT">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
         with gr.Row(elem_id="custom_row"):
             with gr.Column(scale=3, min_width=600):
               # max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256, visible=False)
@@ -90,7 +91,7 @@ with block:
               clear.click(fn=clear_history, inputs=state, outputs=state)
     # speech_to_text
     with gr.Tab("Bóc băng Youtube"):
-        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1>""")
+        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-B%C3%B3c-B%C4%83ng">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
         with gr.Row().style(equal_height=True):
           # with gr.Column():
             link_youtube = gr.Textbox(label="YouTube Link")
