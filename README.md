@@ -38,6 +38,21 @@ git clone https://github.com/AIV-Group/VnGPT-CE
 4. Tiếp theo chạy file `bash run.sh` để chương trình khởi chạy. (Có thể bạn cần chạy thêm lệnh `chmod +x run.sh` để cấp quyền chạy chương trình cho VnGPT)
 5. Sau khi chương trình đã chạy bạn có thể mở đường dẫn `http://127.0.0.1:7860` trên trình duyệt để sử dụng VnGPT.
 
+### VnGPT cài đặt trên Macos
+Để chạy các lệnh dưới đây bạn cần sử dụng Terminal trên máy của bạn
+1. Cài đặt gói [Brew](https://brew.sh/)
+1. Cài đặt python (phiên bản 3.10.6 trở lên) sử dụng lệnh sau:
+```bash
+brew install python@3.10
+```
+2. Tiếp theo tải về mã nguồn của VnGPT bằng lệnh sau:
+```bash
+git clone https://github.com/AIV-Group/VnGPT-CE
+```
+3. Tiếp theo bạn mở thư mục mã nguồn VnGPT đã tải về và copy file `.env.example` thành file `.env` sau đó thay đoạn `your_open_api_key` thành Open API Key của bạn.
+4. Tiếp theo chạy file `bash run.sh` để chương trình khởi chạy. (Có thể bạn cần chạy thêm lệnh `chmod +x run.sh` để cấp quyền chạy chương trình cho VnGPT)
+5. Sau khi chương trình đã chạy bạn có thể mở đường dẫn `http://127.0.0.1:7860` trên trình duyệt để sử dụng VnGPT.
+
 ### Demo sản phẩm
 - Bóc băng bằng Whisper AI
 ![Bóc băng bằng Whisper AI](demo-whiper-ai.gif)
