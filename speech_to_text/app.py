@@ -6,15 +6,17 @@ from pytube import YouTube
 from pydub import AudioSegment
 import gradio as gr
 from youtube_transcript_api import YouTubeTranscriptApi
+from lib_app.utils import *
 
 #if you have OpenAI API key as an environment variable, enable the below
 #openai.api_key = os.getenv("OPENAI_API_KEY")
 
 #if you have OpenAI API key as a string, enable the below
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
-openai.api_key = OPEN_API_KEY
+SECRET_KEY = os.environ['SECRET_KEY']
 # feature audio using pytube and whisper AI
-def speech_to_text(link_youtube, fulltime, start_second, end_second):
+def speech_to_text(link_youtube, fulltime, start_second, end_second, api_key):
+    openai.api_key = encode("decode", api_key, SECRET_KEY)
     # video = 'https://www.youtube.com/watch?v=LFwU8byhFsI'
     video = link_youtube
     data = YouTube(video)
@@ -70,9 +72,18 @@ def generate_transcript(id, lang):
 
     return script, len(script.split())
 
-def youtube_transcripts(link_youtube, lang):
+def youtube_transcripts_with_subtitles(link_youtube, lang):
     yt = YouTube(link_youtube)
     video_id = yt.video_id
     transcript, no_of_words = generate_transcript(video_id, lang)
     # print(transcript)
     return transcript
+
+def transcribe_with_file(audio, api_key):
+    try:
+        audio_file = open(audio, "rb")
+        openai.api_key = encode("decode", api_key, SECRET_KEY)
+        transcription = openai.Audio.transcribe("whisper-1", audio_file)
+        return transcription.text, gr.update(value="""<i style="color:#3ADF00"><center>Bóc băng thành công. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=True)
+    except:
+        return "", gr.update(value="""<i style="color:red"><center>Đã có lỗi xảy ra. Xin thử lại</center></i>""", visible=True), gr.update(interactive=False), gr.update(interactive=False)

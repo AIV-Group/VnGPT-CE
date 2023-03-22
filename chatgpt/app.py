@@ -9,12 +9,13 @@ from langchain.llms import OpenAI
 import gradio as gr
 import requests
 import tiktoken
+from lib_app.utils import *
 #if you have OpenAI API key as an environment variable, enable the below
 #openai.api_key = os.getenv("OPENAI_API_KEY")
 
 #if you have OpenAI API key as a string, enable the below
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
-
+SECRET_KEY = os.environ['SECRET_KEY']
 
 model_name = "gpt-3.5-turbo"
 
@@ -64,7 +65,8 @@ def create_formatted_history(history_messages: List[dict]) -> List[Tuple[str, st
 def chat(
     message: str, state: List[Dict[str, str]], temperature: float, api_key: str
 ) -> Generator[Tuple[List[Tuple[str, str]], List[Dict[str, str]]], None, None]:
-    LLM = OpenAI(model_name=model_name, temperature=temperature, openai_api_key=api_key)
+    key_open = encode("decode", api_key, SECRET_KEY)
+    LLM = OpenAI(model_name=model_name, temperature=temperature, openai_api_key=key_open)
     print("State 1: ",state)
     history_messages = state
     if history_messages == None:
