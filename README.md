@@ -40,4 +40,4 @@ git clone https://github.com/AIV-Group/VnGPT-CE
 
 ### Demo sản phẩm
 - Bóc băng bằng Whisper AI
-![VnGPT - AI cho mọi nhà](demo-whisper-ai.gif?raw=true)
+![VnGPT - AI cho mọi nhà](https://github.com/AIV-Group/VnGPT-CE/blob/main/demo-whiper-ai.gif)
