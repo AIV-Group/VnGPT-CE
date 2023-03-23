@@ -131,9 +131,9 @@ with block:
         alert_result_speech_to_text_with_file = gr.Markdown(value="""<i style="color:#0040FF"><center></center></i>""", visible=False)
         result_speech_to_text_with_file = gr.Textbox(label="Kết quả bóc băng", interactive=True)
         with gr.Row().style(equal_height=True):
-          submit_audio = gr.Button("Bóc băng", interactive=False)
+          submit_audio = gr.Button("Bóc băng", interactive=True)
           btn_audio_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
-          submit_audio.click(transcribe_with_file, inputs=[audio_upload, main_key], outputs=[result_speech_to_text_with_file, alert_result_speech_to_text_with_file, submit_audio, btn_audio_send_gpt])
+          submit_audio.click(transcribe_with_cut_file, inputs=[audio_upload, main_key], outputs=[result_speech_to_text_with_file, alert_result_speech_to_text_with_file, submit_audio, btn_audio_send_gpt])
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_speech_to_text_with_file, outputs=message)
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>""", visible=True), inputs=btn_audio_send_gpt, outputs=alert_result_speech_to_text_with_file)
           audio_upload.change(fn=lambda value: gr.update(interactive=True), inputs=audio_upload, outputs=submit_audio)
