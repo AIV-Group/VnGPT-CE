@@ -46,7 +46,7 @@ def process_speech_to_text(type_transcripts, language_transcripts,link_youtube, 
         transcripts = youtube_transcripts_with_subtitles(link_youtube, "vi")
       else:
         transcripts = youtube_transcripts_with_subtitles(link_youtube, "en")
-      return transcripts
+      return transcripts, gr.update(value="""<i style="color:#3ADF00"><center>Bóc băng thành công. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=True)
    else:
       transcripts = transcribe_with_file(audio_youtube_convert, main_key)
       return transcripts
