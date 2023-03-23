@@ -161,3 +161,4 @@ cython_debug/
 #.idea/
 test.py
 test2.py
+*.mp4
