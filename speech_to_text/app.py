@@ -86,4 +86,13 @@ def transcribe_with_file(audio, api_key):
         transcription = openai.Audio.transcribe("whisper-1", audio_file)
         return transcription.text, gr.update(value="""<i style="color:#3ADF00"><center>Bóc băng thành công. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=True)
     except:
-        return "", gr.update(value="""<i style="color:red"><center>Đã có lỗi xảy ra. Xin thử lại</center></i>""", visible=True), gr.update(interactive=False), gr.update(interactive=False)
+        return "", gr.update(value="""<i style="color:red"><center>Đã có lỗi xảy ra. Xin thử lại</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=False)
+    
+def get_audio_from_youtube(link_youtube):
+    # video = 'https://www.youtube.com/watch?v=LFwU8byhFsI'
+    video = link_youtube
+    data = YouTube(video)
+    # Converting and downloading as 'MP4' file
+    audio = data.streams.get_audio_only()
+    path_audio = audio.download()
+    return gr.update(value=path_audio)
