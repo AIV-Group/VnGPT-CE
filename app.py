@@ -28,7 +28,7 @@ def check_result_speech_to_text(whisper_result):
 def check_link_youtube(link_youtube):
    try:
       populate_metadata(link_youtube)
-      return gr.update(interactive=True), gr.update(value="""<i style="color:#3ADF00"><center>Link youtube hợp lệ. Mời tiếp tục</center></i>""", visible=True), gr.update(visible=True, interactive=True), gr.update(visible=True, interactive=True)
+      return gr.update(interactive=True), gr.update(value="""<i style="color:#3ADF00"><center>Link youtube hợp lệ. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=True)
    except:
       return gr.update(interactive=False), gr.update(value="""<i style="color:red"><center>Link youtube không hợp lệ. Xin thử lại</center></i>""", visible=True), gr.update(visible=False), gr.update(visible=False)
 
