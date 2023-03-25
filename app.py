@@ -58,6 +58,16 @@ def process_speech_to_text(type_transcripts, language_transcripts,link_youtube, 
    else:
       transcripts = speech_to_text(link_youtube, cut_fulltime, msecond_start, msecond_end, main_key)
       return transcripts
+   
+# function process speech to text
+def process_transcribe_with_cut_file(audio_upload, main_key):
+   result = transcribe_with_cut_file(audio_upload, main_key)
+   if result:
+      return result, gr.update(value="""<i style="color:#3ADF00"><center>Bóc băng thành công. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True), gr.update(interactive=True)
+   else:
+      return result, gr.update(value="""<i style="color:red"><center>Đã có lỗi xảy ra. Xin thử lại</center></i>""", visible=True), gr.update(interactive=False), gr.update(interactive=False)
+
+# function update main key (openai api key) for all app
 def update_main_key(api_key_textbox):
    key_lock = encode("encode", api_key_textbox, SECRET_KEY)
    return gr.update(value=key_lock)
@@ -134,7 +144,7 @@ with block:
         with gr.Row().style(equal_height=True):
           submit_audio = gr.Button("Bóc băng", interactive=True)
           btn_audio_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
-          submit_audio.click(transcribe_with_cut_file, inputs=[audio_upload, main_key], outputs=[result_speech_to_text_with_file, alert_result_speech_to_text_with_file, submit_audio, btn_audio_send_gpt])
+          submit_audio.click(process_transcribe_with_cut_file, inputs=[audio_upload, main_key], outputs=[result_speech_to_text_with_file, alert_result_speech_to_text_with_file, submit_audio, btn_audio_send_gpt])
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_speech_to_text_with_file, outputs=message)
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>""", visible=True), inputs=btn_audio_send_gpt, outputs=alert_result_speech_to_text_with_file)
           audio_upload.change(fn=lambda value: gr.update(interactive=True), inputs=audio_upload, outputs=submit_audio)
@@ -158,7 +168,7 @@ with block:
         gr.Markdown("""<h3><center>Phiên bản: 1.0.5</center></h3>""")
         gr.Markdown("""<h3><center><a href="https://github.com/AIV-Group/VnGPT-CE">Liên kết đến repo dự án</a></center></h3>""")
         gr.Markdown("""<h3><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Liên kết đến form góp ý/yêu cầu tính năng</a></center></h3>""")
-    gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769813295_6d024bbe81_o.jpg)""")
+    # gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769813295_6d024bbe81_o.jpg)""")
 # info auth app
 ID = os.environ['ID']
 PASSWORD = os.environ['PASSWORD']
