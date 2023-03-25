@@ -1,4 +1,4 @@
-![VnGPT - AI cho mọi nhà](demo.jpg?raw=true)
+![VnGPT - AI cho mọi nhà](images/demo.jpg?raw=true)
 
 # VnGPT - AI cho mọi nhà
 Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình
@@ -55,4 +55,4 @@ git clone https://github.com/AIV-Group/VnGPT-CE
 
 ### Demo sản phẩm
 - Bóc băng bằng Whisper AI
-![Bóc băng bằng Whisper AI](demo-whiper-ai.gif)
+![Bóc băng bằng Whisper AI](images/demo-whiper-ai.gif)
