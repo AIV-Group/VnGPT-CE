@@ -62,7 +62,7 @@ def update_main_key(api_key_textbox):
    key_lock = encode("encode", api_key_textbox, SECRET_KEY)
    return gr.update(value=key_lock)
 
-block = gr.Blocks(css=".gradio-container {padding-top:0px !important; padding-bottom:0px !important;} footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
+block = gr.Blocks(css=".gradio-container {padding-top:0px !important; padding-bottom:0px !important;} footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;} #chatbot_custom > .wrap {max-height: 1500px;}")
 
 
 with block:
