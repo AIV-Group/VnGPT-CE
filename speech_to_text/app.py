@@ -59,13 +59,16 @@ def transcribe_with_cut_file(audio, api_key):
             start_time = int(duration_minutes) * 60 * 1000  # Milliseconds
             end_time = len(audio_file)  # Milliseconds
             audio_segment = audio_file[start_time:end_time]
-            file_name = f"audio/{name_folder}/part_{int(duration_minutes)}.mp3"
-            audio_segment.export(file_name, format="mp3")
-            print(f"Exported {file_name}.")
-            file_stt = open(file_name, "rb")
-            transcription = openai.Audio.transcribe("whisper-1", file_stt)
-            main_result += f" {transcription.text}"
-            print("Done time: ",main_result)
+            if audio_segment.duration_seconds >= 0.1:
+                file_name = f"audio/{name_folder}/part_{int(duration_minutes)}.mp3"
+                audio_segment.export(file_name, format="mp3")
+                print(f"Exported {file_name}.")
+                file_stt = open(file_name, "rb")
+                transcription = openai.Audio.transcribe("whisper-1", file_stt)
+                main_result += f" {transcription.text}"
+                print("Done time: ",main_result)
+            else:
+                print(f"Skipped segment {int(duration_minutes)} due to short duration.")
         #process for whisper openai
         
         shutil.rmtree(f"audio/{name_folder}")
