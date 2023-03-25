@@ -62,12 +62,13 @@ def update_main_key(api_key_textbox):
    key_lock = encode("encode", api_key_textbox, SECRET_KEY)
    return gr.update(value=key_lock)
 
-block = gr.Blocks(css="footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
+block = gr.Blocks(css=".gradio-container {padding-top:0px !important; padding-bottom:0px !important;} footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;}")
 
 
 with block:
-    gr.Markdown("""<h1><center>VnGPT - AI cho mọi nhà</center></h1>""", elem_id="custom_title_h1")
-    gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p><p><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Yêu cầu thêm tính năng tại đây</a></center></p>""")
+    # gr.Markdown("""<h1><center><image></center></h1>""", elem_id="custom_title_h1")
+    gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769637974_fe4addea5a_k.jpg)""")
+    # gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p><p><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Yêu cầu thêm tính năng tại đây</a></center></p>""")
     main_key = gr.Textbox(visible=False, value=first_key_lock)
     # ChatGPT--turbo3.5
     with gr.Tab("ChatGPT"):
@@ -152,7 +153,12 @@ with block:
         password.submit(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
         type_account.change(filter_type_account, type_account, outputs=[api_key_textbox, username, password, login_btn, alert_login])
         api_key_textbox.change(update_main_key, api_key_textbox, main_key)
-
+    with gr.Tab("Thông tin"):
+        # gr.Markdown("""<h1><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình</center></h1>""")
+        gr.Markdown("""<h3><center>Phiên bản: 1.0.5</center></h3>""")
+        gr.Markdown("""<h3><center><a href="https://github.com/AIV-Group/VnGPT-CE">Liên kết đến repo dự án</a></center></h3>""")
+        gr.Markdown("""<h3><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Liên kết đến form góp ý/yêu cầu tính năng</a></center></h3>""")
+    gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769813295_6d024bbe81_o.jpg)""")
 # info auth app
 ID = os.environ['ID']
 PASSWORD = os.environ['PASSWORD']
