@@ -6,6 +6,7 @@ from chatgpt.app import *
 from speech_to_text.app import *
 from account.app import *
 from lib_app.utils import *
+from summary_long_text.app import *
 
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 first_key_lock = encode("encode", OPEN_API_KEY, SECRET_KEY)
@@ -72,14 +73,27 @@ def update_main_key(api_key_textbox):
    key_lock = encode("encode", api_key_textbox, SECRET_KEY)
    return gr.update(value=key_lock)
 
+# function check original_text and summary_text
+def check_original_text(original_text):
+   conversation = [{"role": "user", "content": original_text}]
+   token_original_text = num_tokens_from_messages(conversation)
+   if original_text and token_original_text > 2048:
+      return gr.update(value="""<i style="color:#3ADF00"><center>Văn bản gốc hợp lệ. Mời sử dụng</center></i>""", visible=True), gr.update(interactive=True)
+   else:
+      return gr.update(value="""<i style="color:red"><center>Văn bản gốc không hợp lệ (có thể trống hoặc đã phù hợp để sử dụng với ChatGPT). Xin thử lại</center></i>""", visible=True), gr.update(interactive=False)
+
 block = gr.Blocks(css=".gradio-container {padding-top:0px !important; padding-bottom:0px !important;} footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;} #chatbot_custom > .wrap {max-height: 1500px;}")
 
+# function check event change value of flag textbox
+def check_flag_textbox(flag_textbox):
+   return gr.update(value=flag_textbox)
 
 with block:
     # gr.Markdown("""<h1><center><image></center></h1>""", elem_id="custom_title_h1")
     gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769637974_fe4addea5a_k.jpg)""")
     # gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p><p><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Yêu cầu thêm tính năng tại đây</a></center></p>""")
     main_key = gr.Textbox(visible=False, value=first_key_lock)
+    flag_textbox = gr.Textbox(visible=False)
     # ChatGPT--turbo3.5
     with gr.Tab("ChatGPT"):
         gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-ChatGPT-trong-VnGPT">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
@@ -124,13 +138,16 @@ with block:
         with gr.Row().style(equal_height=True):
           whisper_result = gr.Textbox(label="Bóc băng", placeholder="Kết quả bóc băng", lines=10)
         alert_forward_chatgpt = gr.Markdown(value="""<i style="color:#0040FF"><center>Bạn có thể gửi kết quả bóc băng sang ChatGPT để tiếp tục xử lý</center></i>""", visible=True)  
-        with gr.Row().style(equal_height=True):
-          btn_transcripts = gr.Button("Bóc băng", interactive=False)     
+        btn_transcripts = gr.Button("Bóc băng", interactive=False) 
+        with gr.Row().style(equal_height=True):   
           btn_transcripts.click(process_speech_to_text, inputs=[type_transcripts, language_transcripts,link_youtube, cut_fulltime, msecond_start, msecond_end, main_key], outputs=[whisper_result])
           btn_transcripts.click(lambda :"", None, message, scroll_to_output=True)
           btn_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
+          btn_send_summary = gr.Button("Gửi kết quả sang Rút gọn", interactive=True) 
           btn_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=whisper_result, outputs=message)
           btn_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>"""), inputs=btn_send_gpt, outputs=alert_forward_chatgpt)
+          btn_send_summary.click(fn=lambda value: gr.update(value=value, lines=5), inputs=whisper_result, outputs=flag_textbox)
+          btn_send_summary.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang Rút gọn thành công.</center></i>"""), inputs=btn_send_summary, outputs=alert_forward_chatgpt)
           whisper_result.change(check_result_speech_to_text, whisper_result, btn_send_gpt)
           link_youtube.change(populate_metadata, inputs=[link_youtube], outputs=[img, title])
           cut_fulltime.change(filter_full_time, inputs=[cut_fulltime,link_youtube], outputs=[msecond_start, msecond_end])
@@ -141,13 +158,32 @@ with block:
         audio_upload = gr.Audio(source="upload", type="filepath")
         alert_result_speech_to_text_with_file = gr.Markdown(value="""<i style="color:#0040FF"><center></center></i>""", visible=False)
         result_speech_to_text_with_file = gr.Textbox(label="Kết quả bóc băng", interactive=True)
-        with gr.Row().style(equal_height=True):
-          submit_audio = gr.Button("Bóc băng", interactive=True)
+        submit_audio = gr.Button("Bóc băng", interactive=True)
+        with gr.Row().style(equal_height=True):          
           btn_audio_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=False) 
+          btn_audio_send_summary = gr.Button("Gửi kết quả sang Rút gọn", interactive=True) 
           submit_audio.click(process_transcribe_with_cut_file, inputs=[audio_upload, main_key], outputs=[result_speech_to_text_with_file, alert_result_speech_to_text_with_file, submit_audio, btn_audio_send_gpt])
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_speech_to_text_with_file, outputs=message)
           btn_audio_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>""", visible=True), inputs=btn_audio_send_gpt, outputs=alert_result_speech_to_text_with_file)
+          btn_audio_send_summary.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_speech_to_text_with_file, outputs=flag_textbox)
+          btn_audio_send_summary.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang Rút gọn thành công.</center></i>""", visible=True), inputs=btn_audio_send_summary, outputs=alert_result_speech_to_text_with_file)
           audio_upload.change(fn=lambda value: gr.update(interactive=True), inputs=audio_upload, outputs=submit_audio)
+    # summary text
+    with gr.Tab("Rút gọn văn bản"):
+        gr.Markdown("""<h1><center>Rút gọn văn bản dài</center></h1>""")
+        original_text = gr.Textbox(label="Văn bản gốc", placeholder="Nhập văn bản gốc vào đây", lines=10)
+        alert_check_original_text = gr.Markdown(value="""<i style="color:#0040FF"><center></center></i>""", visible=False)
+        max_tokens = gr.Slider(label="Token tối đa", minimum=850, maximum=1024, step=1, value=1000, elem_id="msecond_start", visible=True)
+        language_summary = gr.Dropdown(["English", "Vietnamese"], label="Ngôn ngữ bóc băng", value="English", interactive=True, visible=True)
+        result_summary_long_text = gr.Textbox(label="Kết quả rút gọn", interactive=True)
+        with gr.Row().style(equal_height=True):
+          btn_submit_summary = gr.Button("Rút gọn", interactive=False)
+          btn_summary_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=True) 
+          btn_submit_summary.click(summary_long_text, inputs=[original_text, main_key, max_tokens, language_summary], outputs=[result_summary_long_text])
+          btn_submit_summary.click(lambda :"", None, message, scroll_to_output=True)
+          btn_summary_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_summary_long_text, outputs=message)
+          btn_summary_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>""", visible=True), inputs=btn_summary_send_gpt, outputs=alert_check_original_text)
+          original_text.change(check_original_text, original_text, outputs=[alert_check_original_text, btn_submit_summary])
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
     # Veri account
@@ -169,6 +205,7 @@ with block:
         gr.Markdown("""<h3><center><a href="https://github.com/AIV-Group/VnGPT-CE">Liên kết đến repo dự án</a></center></h3>""")
         gr.Markdown("""<h3><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Liên kết đến form góp ý/yêu cầu tính năng</a></center></h3>""")
     # gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769813295_6d024bbe81_o.jpg)""")
+    flag_textbox.change(check_flag_textbox, flag_textbox, original_text)
 # info auth app
 ID = os.environ['ID']
 PASSWORD = os.environ['PASSWORD']
