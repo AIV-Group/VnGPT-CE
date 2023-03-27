@@ -8,7 +8,11 @@ from lib_app.utils import *
 # print(resp.content + main_text)
 SECRET_KEY = os.environ['SECRET_KEY']
 
-def summary_long_text(text, api_key, max_tokens, language_summary, n=500):
+def summary_long_text(text, api_key, max_tokens, language_summary, prompts_summary, custom_prompts_summary, n=500):
+    if language_summary == 'Tiếng Việt':
+        language_summary = 'Vietnamese'
+    else:
+        language_summary = 'English'
     openai_key = encode("decode", api_key, SECRET_KEY)
     chat = ChatOpenAI(streaming=True, callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]), verbose=True, max_tokens=2048, temperature=0.7, openai_api_key=openai_key)
     words = text.split()
@@ -29,13 +33,25 @@ def summary_long_text(text, api_key, max_tokens, language_summary, n=500):
         max_words = int(round(max_tokens / total_parts))
         print(max_words)
         for x in result:
-            resp = chat([HumanMessage(content=f"Summarize text below into {language_summary} with maximum {1024 / max_words} words: {x}"
-    )])
+            prompt = ""
+            if prompts_summary == 'Tùy chỉnh prompt':
+                prompt = f"Summarize text below into {language_summary} with maximum {1024 / max_words} words and {custom_prompts_summary}: {x}"
+            elif prompts_summary == 'Rút gọn văn bản bằng ngôn ngữ chọn và xuống gần với giá trị max_tokens':
+                prompt = f"Summarize text below into {language_summary} with maximum {1024 / max_words} words: {x}"
+            else:
+                prompt = f"Summarize text below into {language_summary} with maximum {1024 / max_words} words: {x}"
+            resp = chat([HumanMessage(content=prompt)])
             new_paragraph += ''.join(resp.content) + ' '
         yield new_paragraph
     else:
-        resp = chat([HumanMessage(content=f"Summarize text below into {language_summary} with maximum {max_tokens} words: {text}"
-    )])
+        prompt = ""
+        if prompts_summary == 'Tùy chỉnh prompt':
+            prompt = f"Summarize text below into {language_summary} with maximum {max_tokens} words and {custom_prompts_summary}: {text}"
+        elif prompts_summary == 'Rút gọn văn bản bằng ngôn ngữ chọn và xuống gần với giá trị max_tokens':
+            prompt = f"Summarize text below into {language_summary} with maximum {max_tokens} words: {text}"
+        else:
+            prompt = f"Summarize text below into {language_summary} with maximum {max_tokens} words: {text}"
+        resp = chat([HumanMessage(content=prompt)])
         new_paragraph = ''
         new_paragraph += ''.join(resp.content) + ' '
         yield new_paragraph

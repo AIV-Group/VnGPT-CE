@@ -176,16 +176,19 @@ with block:
         original_text = gr.Textbox(label="Văn bản gốc", placeholder="Nhập văn bản gốc vào đây", lines=10)
         alert_check_original_text = gr.Markdown(value="""<i style="color:#0040FF"><center></center></i>""", visible=False)
         max_tokens = gr.Slider(label="Token tối đa", minimum=850, maximum=1024, step=1, value=1000, elem_id="msecond_start", visible=True)
-        language_summary = gr.Dropdown(["English", "Vietnamese"], label="Ngôn ngữ rút gọn", value="English", interactive=True, visible=True)
+        prompts_summary = gr.Dropdown(["Rút gọn văn bản bằng ngôn ngữ chọn và xuống gần với giá trị max_tokens", "Tùy chỉnh prompt"], label="Prompt rút gọn", value="Rút gọn văn bản bằng ngôn ngữ chọn và xuống gần với giá trị max_tokens", interactive=True, visible=True)
+        custom_prompts_summary = gr.Textbox(label="Prompt tùy chỉnh", placeholder="Nhập prompt tùy chỉnh vào đây", lines=2, visible=False)
+        language_summary = gr.Dropdown(["Tiếng Việt", "Tiếng Anh"], label="Ngôn ngữ rút gọn", value="Tiếng Việt", interactive=True, visible=True)
         result_summary_long_text = gr.Textbox(label="Kết quả rút gọn", interactive=True)
         with gr.Row().style(equal_height=True):
           btn_submit_summary = gr.Button("Rút gọn", interactive=False)
           btn_summary_send_gpt = gr.Button("Gửi kết quả sang ChatGPT", interactive=True) 
-          btn_submit_summary.click(summary_long_text, inputs=[original_text, main_key, max_tokens, language_summary], outputs=[result_summary_long_text])
+          btn_submit_summary.click(summary_long_text, inputs=[original_text, main_key, max_tokens, language_summary, prompts_summary, custom_prompts_summary], outputs=[result_summary_long_text])
           btn_submit_summary.click(lambda :"", None, message, scroll_to_output=True)
           btn_summary_send_gpt.click(fn=lambda value: gr.update(value=value, lines=5), inputs=result_summary_long_text, outputs=message)
           btn_summary_send_gpt.click(fn=lambda value: gr.update(value="""<i style="color:#3ADF00"><center>Gửi kết quả sang ChatGPT thành công.</center></i>""", visible=True), inputs=btn_summary_send_gpt, outputs=alert_check_original_text)
           original_text.change(check_original_text, original_text, outputs=[alert_check_original_text, btn_submit_summary])
+          prompts_summary.change(lambda value: gr.update(visible=True if value == "Tùy chỉnh prompt" else False), inputs=prompts_summary, outputs=custom_prompts_summary)
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
     # Veri account
