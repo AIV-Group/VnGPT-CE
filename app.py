@@ -174,7 +174,7 @@ with block:
         original_text = gr.Textbox(label="Văn bản gốc", placeholder="Nhập văn bản gốc vào đây", lines=10)
         alert_check_original_text = gr.Markdown(value="""<i style="color:#0040FF"><center></center></i>""", visible=False)
         max_tokens = gr.Slider(label="Token tối đa", minimum=850, maximum=1024, step=1, value=1000, elem_id="msecond_start", visible=True)
-        language_summary = gr.Dropdown(["English", "Vietnamese"], label="Ngôn ngữ bóc băng", value="English", interactive=True, visible=True)
+        language_summary = gr.Dropdown(["English", "Vietnamese"], label="Ngôn ngữ rút gọn", value="English", interactive=True, visible=True)
         result_summary_long_text = gr.Textbox(label="Kết quả rút gọn", interactive=True)
         with gr.Row().style(equal_height=True):
           btn_submit_summary = gr.Button("Rút gọn", interactive=False)
