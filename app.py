@@ -77,10 +77,12 @@ def update_main_key(api_key_textbox):
 def check_original_text(original_text):
    conversation = [{"role": "user", "content": original_text}]
    token_original_text = num_tokens_from_messages(conversation)
-   if original_text and token_original_text > 2048:
-      return gr.update(value="""<i style="color:#3ADF00"><center>Văn bản gốc hợp lệ. Mời sử dụng</center></i>""", visible=True), gr.update(interactive=True)
+   if original_text and token_original_text < 2048:
+      return gr.update(value="""<i style="color:#3ADF00"><center>Văn bản này phù hợp để sử dụng trực tiếp trong ChatGPT, không nhất thiết cần rút gọn</center></i>""", visible=True), gr.update(interactive=True)
+   elif original_text and token_original_text > 2048:
+      return gr.update(value="""<i style="color:#3ADF00"><center>Văn bản gốc phù hợp. Mời tiếp tục</center></i>""", visible=True), gr.update(interactive=True)
    else:
-      return gr.update(value="""<i style="color:red"><center>Văn bản gốc không hợp lệ (có thể trống hoặc đã phù hợp để sử dụng với ChatGPT). Xin thử lại</center></i>""", visible=True), gr.update(interactive=False)
+      return gr.update(value="""<i style="color:red"><center>Văn bản gốc không được trống. Xin thử lại</center></i>""", visible=True), gr.update(interactive=False)
 
 block = gr.Blocks(css=".gradio-container {padding-top:0px !important; padding-bottom:0px !important;} footer {display:none !important;} #chatbot_custom > .wrap > .message-wrap > .bot {font-size:20px !important; background-color: #b7bbd4 !important} #chatbot_custom > .wrap > .message-wrap > .user {font-size:20px !important} #custom_row {flex-direction: row-reverse;} #chatbot_custom > .wrap > .message-wrap {min-height: 150px;} #custom_title_h1 > h1 {margin-bottom:0px;} #chatbot_custom > .wrap {max-height: 1500px;}")
 
