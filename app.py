@@ -215,10 +215,11 @@ with block:
 ID = os.environ['ID']
 PASSWORD = os.environ['PASSWORD']
 AUTH = os.environ['AUTH']
+HOST = os.environ['HOST']
 if AUTH == "False":
   block.queue(concurrency_count=1)
-  block.launch(server_name = "0.0.0.0",debug = True)
+  block.launch(server_name = HOST,debug = True)
 else:
   block.queue(concurrency_count=1)
-  block.launch(server_name = "0.0.0.0", auth = (ID,PASSWORD),debug = True)
+  block.launch(server_name = HOST, auth = (ID,PASSWORD),debug = True)
  
