@@ -7,6 +7,7 @@ from speech_to_text.app import *
 from account.app import *
 from lib_app.utils import *
 from summary_long_text.app import *
+from docs.app import *
 
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 first_key_lock = encode("encode", OPEN_API_KEY, SECRET_KEY)
@@ -104,6 +105,7 @@ with block:
               # max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256, visible=False)
               # role=gr.Radio(["user", "system", "assistant"], label="Lựa chọn vai trò sẽ hỏi", visible=False)
               temperature = gr.Slider(label="Độ sáng tạo của AI (tối thiểu 0, tối đa 1)", minimum=0, maximum=1, step=0.1, value=0.1, interactive=True)
+              num_history = gr.Slider(label="Số lịch sử hội thoại AI có thể nhớ", minimum=1, maximum=10, step=1, value=2, interactive=True)
             with gr.Column(scale=5, min_width=600):
               chatbot = gr.Chatbot(elem_id="chatbot_custom")
               alert_response_chatgpt = gr.Markdown(value="""<i style="color:#3ADF00"><center>Câu hỏi càng ngắn gọn số token càng nhỏ</center></i>""", visible=True) 
@@ -111,9 +113,9 @@ with block:
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
               #submit gpt
-              submit.click(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state, alert_response_chatgpt])
+              submit.click(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
               submit.click(lambda :"", None, message, scroll_to_output=True)
-              message.submit(chat, inputs=[message, state, temperature, main_key], outputs=[chatbot, state, alert_response_chatgpt])
+              message.submit(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
               clear = gr.Button("Xóa lịch sử chat")
@@ -191,6 +193,25 @@ with block:
           prompts_summary.change(lambda value: gr.update(visible=True if value == "Tùy chỉnh prompt" else False), inputs=prompts_summary, outputs=custom_prompts_summary)
     with gr.Tab("Stable Diffusion"):
         gr.Markdown("""<h1><center>Đang phát triển</center></h1>""")
+    # Bot hướng dẫn sử dụng
+    with gr.Tab("Hướng dẫn sử dụng"):
+        gr.Markdown("""<h1><center>Chatbot hướng dẫn sử dụng</center></h1>""")
+        with gr.Box(elem_id="custom_row"):
+              chatbot_docs = gr.Chatbot(elem_id="chatbot_custom")
+              alert_response_chatgpt_docs = gr.Markdown(value="""<i style="color:#3ADF00"><center>Câu hỏi càng ngắn gọn số token càng nhỏ</center></i>""", visible=True) 
+              message_docs = gr.Textbox(placeholder="Hỏi chatbot bất cứ vấn đề nào về VnGPT mà bạn muốn", label="Câu hỏi của bạn")
+              state_docs = gr.State()
+              with gr.Row().style(equal_height=True):
+                submit_docs = gr.Button("Gửi câu hỏi")
+                #submit gpt
+                submit_docs.click(chat_docs, inputs=[message_docs, state_docs, main_key], outputs=[chatbot_docs, state_docs, alert_response_chatgpt_docs])
+                submit_docs.click(lambda :"", None, message_docs, scroll_to_output=True)
+                message_docs.submit(chat_docs, inputs=[message_docs, state_docs, main_key], outputs=[chatbot_docs, state_docs, alert_response_chatgpt_docs])
+                message_docs.submit(lambda :"", None, message_docs, scroll_to_output=True)
+                #clear history chat
+                clear_docs = gr.Button("Xóa lịch sử chat")
+                clear_docs.click(lambda: None, None, chatbot_docs, queue=False)
+                clear_docs.click(fn=clear_history_docs, inputs=state_docs, outputs=state_docs)
     # Veri account
     with gr.Tab("Tài khoản"):
         gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
