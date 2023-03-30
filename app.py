@@ -12,6 +12,7 @@ from docs.app import *
 OPEN_API_KEY = os.environ['OPEN_API_KEY']
 first_key_lock = encode("encode", OPEN_API_KEY, SECRET_KEY)
 SECRET_KEY = os.environ['SECRET_KEY']
+IMG_BANNER = os.environ['IMG_BANNER']
 #all function process app
 # func check type account
 def filter_type_account(type_account):
@@ -93,7 +94,7 @@ def check_flag_textbox(flag_textbox):
 
 with block:
     # gr.Markdown("""<h1><center><image></center></h1>""", elem_id="custom_title_h1")
-    gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769637974_fe4addea5a_k.jpg)""")
+    gr.Markdown(f"""![VnGPT]({IMG_BANNER})""")
     # gr.Markdown("""<p><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình. <a href="https://github.com/AIV-Group/VnGPT-CE">Xem thêm tại đây</a></center></p><p><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Yêu cầu thêm tính năng tại đây</a></center></p>""")
     main_key = gr.Textbox(visible=False, value=first_key_lock)
     flag_textbox = gr.Textbox(visible=False)
