@@ -114,14 +114,17 @@ with block:
               state = gr.State()
               submit = gr.Button("Gửi câu hỏi")
               #submit gpt
-              submit.click(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
+              submit_gpt_event = submit.click(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
               submit.click(lambda :"", None, message, scroll_to_output=True)
-              message.submit(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
+              message_ent_gpt_event = message.submit(chat, inputs=[message, state, temperature, main_key, num_history], outputs=[chatbot, state, alert_response_chatgpt])
               message.submit(lambda :"", None, message, scroll_to_output=True)
               #clear history chat
-              clear = gr.Button("Xóa lịch sử chat")
-              clear.click(lambda: None, None, chatbot, queue=False)
-              clear.click(fn=clear_history, inputs=state, outputs=state)
+              with gr.Row():
+                clear = gr.Button("Xóa lịch sử chat")
+                stop_gpt = gr.Button("Dừng chat")
+                stop_gpt.click(lambda: None,cancels=[submit_gpt_event, message_ent_gpt_event])
+                clear.click(lambda: None, None, chatbot, queue=False)
+                clear.click(fn=clear_history, inputs=state, outputs=state)
     # speech_to_text
     with gr.Tab("Bóc băng Youtube"):
         gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-B%C3%B3c-B%C4%83ng">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
@@ -214,24 +217,8 @@ with block:
                 clear_docs.click(lambda: None, None, chatbot_docs, queue=False)
                 clear_docs.click(fn=clear_history_docs, inputs=state_docs, outputs=state_docs)
     # Veri account
-    with gr.Tab("Tài khoản"):
-        gr.Markdown("""<h1><center>Dùng OpenAI Key hoặc tài khoản VNGPT để sử dụng</center></h1>""")
-        type_account = gr.Radio(label="Loại tài khoản", choices=["OpenAI Token", "Tài khoản VnGPT"], value="OpenAI Token")
-        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=True, value=OPEN_API_KEY)
-        username = gr.Textbox(label="Tài khoản", visible=False, interactive=True)
-        password = gr.Textbox(label="Mật khẩu",type='password', visible=False, interactive=True)
-        alert_login = gr.Markdown(value="""<i style="color:#0040FF"><center>Tài khoản này do AIV Group cấp</center></i>""", visible=False)
-        login_btn = gr.Button("Đăng nhập", visible=False)
-        login_btn.click(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
-        password.submit(get_token, [username, password], outputs=[api_key_textbox, alert_login], scroll_to_output=True)
-        type_account.change(filter_type_account, type_account, outputs=[api_key_textbox, username, password, login_btn, alert_login])
+        api_key_textbox = gr.Textbox(placeholder="Nhập OpenAI Token vào đây" ,show_label=False, lines=1, type='password', interactive=True, visible=False, value=OPEN_API_KEY)
         api_key_textbox.change(update_main_key, api_key_textbox, main_key)
-    with gr.Tab("Thông tin"):
-        # gr.Markdown("""<h1><center>Phần mềm nguồn mở giúp mỗi cá nhân trực tiếp sử dụng ChatGPT và hơn thế nữa ngay trên máy tính của mình</center></h1>""")
-        gr.Markdown("""<h3><center>Phiên bản: 1.0.5</center></h3>""")
-        gr.Markdown("""<h3><center><a href="https://github.com/AIV-Group/VnGPT-CE">Liên kết đến repo dự án</a></center></h3>""")
-        gr.Markdown("""<h3><center><a href="https://aivgroupworking.sg.larksuite.com/share/base/form/shrlgHpAepHZvbZFxp3KfMH19kf">Liên kết đến form góp ý/yêu cầu tính năng</a></center></h3>""")
-    # gr.Markdown("""![VnGPT](https://live.staticflickr.com/65535/52769813295_6d024bbe81_o.jpg)""")
     flag_textbox.change(check_flag_textbox, flag_textbox, original_text)
 # info auth app
 ID = os.environ['ID']

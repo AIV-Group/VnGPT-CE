@@ -102,20 +102,26 @@ def chat(
                 messages=history_messages_process, stream=True, model=model_name
             )
             # print("chat_generator", chat_generator)
-            for chunk in chat_generator:
-                if "choices" in chunk:
-                    for choice in chunk["choices"]:
-                        if "delta" in choice and "content" in choice["delta"]:
-                            new_token = choice["delta"]["content"]
-                            # Add the latest token:
-                            response_message += new_token
-                            # Update the assistant's response in our model:
-                            history_messages[-1]["content"] = response_message
+            try:
+                for chunk in chat_generator:
+                    if "choices" in chunk:
+                        for choice in chunk["choices"]:
+                            if "delta" in choice and "content" in choice["delta"]:
+                                new_token = choice["delta"]["content"]
+                                # Add the latest token:
+                                response_message += new_token
+                                # Update the assistant's response in our model:
+                                history_messages[-1]["content"] = response_message
 
-                        if "finish_reason" in choice and choice["finish_reason"] == "stop":
-                            break
-                formatted_history = create_formatted_history(history_messages)
-                yield formatted_history, history_messages, gr.update(value=f"""<i style="color:#3ADF00"><center>Số token của câu hỏi: {num_tokens_from_messages(history_messages[-num_history_process:])+max_response_tokens}</center></i>""", visible=True)
+                            if "finish_reason" in choice and choice["finish_reason"] == "stop":
+                                break
+                    formatted_history = create_formatted_history(history_messages)
+                    yield formatted_history, history_messages, gr.update(value=f"""<i style="color:#3ADF00"><center>Số token của câu hỏi: {num_tokens_from_messages(history_messages[-num_history_process:])+max_response_tokens}</center></i>""", visible=True)
+            except GeneratorExit:
+                chat_generator.close()
+                chunk["choices"].close()
+                # exit()
+                raise
         except:
             formatted_history = create_formatted_history(state)
             yield formatted_history, state, gr.update(value="""<i style="color:red"><center>Có lỗi xảy ra. Có thể do tài khoản của bạn hoặc kết nối mạng.</center></i>""", visible=True)
