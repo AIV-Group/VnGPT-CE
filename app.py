@@ -100,7 +100,7 @@ with block:
     flag_textbox = gr.Textbox(visible=False)
     # ChatGPT--turbo3.5
     with gr.Tab("ChatGPT"):
-        gr.Markdown("""<h1><center>Hội thoại với ChatGPT (OpenAI)</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-ChatGPT-trong-VnGPT">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
+        gr.Markdown("""<h1><center></center></p>""")
         with gr.Row(elem_id="custom_row"):
             with gr.Column(scale=3, min_width=600):
               # max_tokens = gr.Slider(label="Số từ tối đa trong câu hỏi", minimum=150, maximum=1048, step=1, value=256, visible=False)
@@ -127,7 +127,7 @@ with block:
                 clear.click(fn=clear_history, inputs=state, outputs=state)
     # speech_to_text
     with gr.Tab("Bóc băng Youtube"):
-        gr.Markdown("""<h1><center>Bóc băng Youtube</center></h1><p><center><a href="https://github.com/AIV-Group/VnGPT-CE/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-s%E1%BB%AD-d%E1%BB%A5ng-ch%E1%BB%A9c-n%C4%83ng-B%C3%B3c-B%C4%83ng">Xem hướng dẫn sử dụng tại đây</a></center></p>""")
+        gr.Markdown("""<h1><center></center></p>""")
         with gr.Row().style(equal_height=True):
           # with gr.Column():
             link_youtube = gr.Textbox(label="YouTube Link")
